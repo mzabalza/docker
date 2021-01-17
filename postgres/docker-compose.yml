@@ -1,0 +1,33 @@
+version: "3"
+services:
+  database:
+    user: root
+    # build:
+    #   context: ./
+    #   dockerfile: ./Dockerfile
+    image: "postgres:11" # use latest official postgres version
+    container_name: postgres
+    restart: always
+    env_file:
+      - ./database.env # configure postgres
+    volumes:
+      - ./data/pg-data/:/var/lib/postgresql/data/ # persist data even if container shuts down
+    ports:
+      - "54321:5432"
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:4.18
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: mzabalza@pmpconseil.com
+      PGADMIN_DEFAULT_PASSWORD: lab321654987
+      PGADMIN_LISTEN_PORT: 80
+    ports:
+      - "8081:80"
+    volumes:
+      - ./data/pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      - database
+    links:
+      - "database:pgsql-server"
